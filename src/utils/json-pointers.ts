@@ -124,6 +124,18 @@ export const getJsonPointers = (
         pointers.set(pointer, { keyFrom, keyTo, valueFrom, valueTo });
         return true;
       }
+
+      if (
+        PRIMITIVE_TYPES.includes(resolveTokenName(type.name, mode) as any) ||
+        resolveTokenName(type.name, mode) === TOKENS.ARRAY
+      ) {
+        const pointer = getJsonPointerAt(state.doc, type.node, mode);
+        if (!pointers.has(pointer)) {
+          const { from: valueFrom, to: valueTo } = type.node;
+          pointers.set(pointer, { valueFrom, valueTo });
+        }
+        return true;
+      }
     },
   });
   return pointers;
