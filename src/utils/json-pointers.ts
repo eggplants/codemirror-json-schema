@@ -5,6 +5,7 @@ import { JSONMode, JSONPointersMap, Side } from "../types";
 import {
   JSON5_TOKENS_MAPPING,
   MODES,
+  PRIMITIVE_TYPES,
   TOKENS,
   YAML_TOKENS_MAPPING,
 } from "../constants";
@@ -108,10 +109,13 @@ export const getJsonPointers = (
           return true;
         }
         // TODO: Make this generic enough to avoid mode-specific checks
-        const nextNode =
-          mode === MODES.JSON
-            ? type.node?.nextSibling?.node
-            : type.node?.nextSibling?.node?.nextSibling?.node;
+        let nextNode = type.node?.nextSibling?.node;
+        if (
+          (mode === MODES.JSON && nextNode?.name === ":")
+          || mode !== MODES.JSON
+        ) {
+          nextNode = nextNode?.nextSibling?.node;
+        }
         if (!nextNode) {
           pointers.set(pointer, { keyFrom, keyTo });
           return true;
